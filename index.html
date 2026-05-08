@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Miguel Mora Maturana — Senior Frontend Engineer specializing in Design Systems, Micro-frontends, and Next.js." />
   <title>Miguel Mora Maturana — Senior Frontend Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     /* ─── Custom Properties ─────────────────────────────────────────── */
     :root {
@@ -45,6 +48,55 @@
       --nav-height: 64px;
     }
 
+    /* ─── Scroll Progress Bar ──────────────────────────────────────── */
+    #scroll-progress {
+      position: fixed;
+      top: 0; left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--gradient-brand);
+      z-index: 200;
+      transition: width 0.1s linear;
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* ─── Back to Top ───────────────────────────────────────────────── */
+    #back-to-top {
+      position: fixed;
+      bottom: 28px;
+      right: 24px;
+      width: 42px; height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(99,102,241,0.15);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      color: var(--indigo-300);
+      cursor: pointer;
+      z-index: 90;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity var(--transition), transform var(--transition),
+                  background var(--transition), border-color var(--transition);
+      pointer-events: none;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    #back-to-top.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+    }
+    #back-to-top:hover {
+      background: rgba(99,102,241,0.28);
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+    #back-to-top svg {
+      width: 16px; height: 16px;
+    }
+
     /* ─── Reset & Base ──────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -54,7 +106,7 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       background-color: var(--bg-base);
       color: var(--text-primary);
       line-height: 1.6;
@@ -167,6 +219,10 @@
     .nav-links a:hover {
       color: var(--text-primary);
       background: rgba(99,102,241,0.1);
+    }
+    .nav-links a.active {
+      color: var(--indigo-300);
+      background: rgba(99,102,241,0.12);
     }
 
     .lang-btn {
@@ -448,12 +504,6 @@
       transition: opacity var(--transition), transform var(--transition), box-shadow var(--transition);
       box-shadow: 0 4px 24px rgba(99,102,241,0.35);
     }
-    .btn-primary:hover {
-      opacity: 0.9;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(99,102,241,0.45);
-    }
-
     .btn-secondary {
       display: inline-flex;
       align-items: center;
@@ -467,11 +517,6 @@
       border: 1px solid var(--border);
       cursor: pointer;
       transition: background var(--transition), border-color var(--transition), transform var(--transition);
-    }
-    .btn-secondary:hover {
-      background: rgba(99,102,241,0.08);
-      border-color: var(--border-hover);
-      transform: translateY(-2px);
     }
 
     /* ─── About ─────────────────────────────────────────────────────── */
@@ -505,10 +550,7 @@
       padding: 24px;
       transition: border-color var(--transition), transform var(--transition);
     }
-    .stat-card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-3px);
-    }
+    /* hover handled by @media (hover: hover) block below */
 
     .stat-number {
       font-size: 2.2rem;
@@ -542,11 +584,6 @@
       overflow: hidden;
       box-shadow: var(--shadow-featured);
       transition: transform var(--transition-slow), box-shadow var(--transition-slow), border-color var(--transition);
-    }
-    .featured-card:hover {
-      transform: translateY(-6px);
-      border-color: rgba(99,102,241,0.5);
-      box-shadow: 0 16px 80px rgba(99,102,241,0.25), 0 2px 0 rgba(99,102,241,0.2) inset;
     }
 
     /* Glowing corner */
@@ -643,12 +680,6 @@
       color: var(--indigo-300);
       transition: background var(--transition), border-color var(--transition), color var(--transition), transform var(--transition);
     }
-    .featured-link:hover {
-      background: rgba(99,102,241,0.2);
-      border-color: var(--indigo-400);
-      color: var(--text-primary);
-      transform: translateX(4px);
-    }
 
     /* ─── Experience ────────────────────────────────────────────────── */
     #experience {
@@ -686,11 +717,6 @@
       border-radius: 50%;
       transition: border-color var(--transition), background var(--transition);
     }
-    .timeline-item:hover .timeline-dot {
-      background: var(--indigo-500);
-      border-color: var(--cyan-400);
-      box-shadow: 0 0 10px rgba(99,102,241,0.5);
-    }
 
     .timeline-card {
       background: var(--bg-card);
@@ -699,11 +725,7 @@
       padding: 24px 28px;
       transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
     }
-    .timeline-card:hover {
-      border-color: var(--border-hover);
-      transform: translateX(4px);
-      box-shadow: var(--shadow-card);
-    }
+
 
     .timeline-header {
       display: flex;
@@ -758,10 +780,6 @@
       padding: 28px;
       transition: border-color var(--transition), transform var(--transition);
     }
-    .skill-group:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-3px);
-    }
 
     .skill-group-title {
       display: flex;
@@ -804,12 +822,6 @@
       transition: background var(--transition), border-color var(--transition), color var(--transition), transform var(--transition);
       cursor: default;
     }
-    .skill-chip:hover {
-      background: rgba(99,102,241,0.18);
-      border-color: rgba(99,102,241,0.4);
-      color: var(--text-primary);
-      transform: translateY(-1px);
-    }
 
     /* ─── Education ─────────────────────────────────────────────────── */
     #education {
@@ -828,11 +840,6 @@
       border-radius: var(--radius-md);
       padding: 28px;
       transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
-    }
-    .edu-card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-card);
     }
 
     .edu-year {
@@ -895,12 +902,7 @@
       color: var(--text-secondary);
       transition: border-color var(--transition), color var(--transition), transform var(--transition), background var(--transition);
     }
-    .contact-link:hover {
-      border-color: var(--border-hover);
-      color: var(--text-primary);
-      transform: translateY(-3px);
-      background: rgba(99,102,241,0.06);
-    }
+    /* .contact-link hover handled by @media (hover: hover) block */
     .contact-link svg {
       width: 18px; height: 18px;
       flex-shrink: 0;
@@ -922,6 +924,35 @@
       font-weight: 600;
     }
 
+    /* ─── Hover: only on pointer devices ───────────────────────────── */
+    @media (hover: hover) and (pointer: fine) {
+      .stat-card:hover        { border-color: var(--border-hover); transform: translateY(-3px); }
+      .skill-group:hover      { border-color: var(--border-hover); transform: translateY(-3px); }
+      .edu-card:hover         { border-color: var(--border-hover); transform: translateY(-4px); box-shadow: var(--shadow-card); }
+      .featured-card:hover    { transform: translateY(-6px); border-color: rgba(99,102,241,0.5); box-shadow: 0 16px 80px rgba(99,102,241,0.25), 0 2px 0 rgba(99,102,241,0.2) inset; }
+      .timeline-card:hover    { border-color: var(--border-hover); transform: translateX(4px); box-shadow: var(--shadow-card); }
+      .timeline-item:hover .timeline-dot { background: var(--indigo-500); border-color: var(--cyan-400); box-shadow: 0 0 10px rgba(99,102,241,0.5); }
+      .btn-primary:hover      { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(99,102,241,0.45); }
+      .btn-secondary:hover    { background: rgba(99,102,241,0.08); border-color: var(--border-hover); transform: translateY(-2px); }
+      .featured-link:hover    { background: rgba(99,102,241,0.2); border-color: var(--indigo-400); color: var(--text-primary); transform: translateX(4px); }
+      .skill-chip:hover       { background: rgba(99,102,241,0.18); border-color: rgba(99,102,241,0.4); color: var(--text-primary); transform: translateY(-1px); }
+      .contact-link:hover     { color: var(--text-primary); transform: translateY(-3px); background: rgba(99,102,241,0.06); }
+    }
+
+    /* ─── Reduced Motion ─────────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+      html { scroll-behavior: auto; }
+    }
+
     /* ─── Responsive ────────────────────────────────────────────────── */
     @media (max-width: 900px) {
       .about-grid { grid-template-columns: 1fr; gap: 40px; }
@@ -937,19 +968,36 @@
       .featured-card { padding: 28px 24px; }
       .about-stats { grid-template-columns: 1fr 1fr; }
       .skills-grid { grid-template-columns: 1fr; }
+      #back-to-top { bottom: 20px; right: 16px; }
     }
 
     @media (max-width: 480px) {
+      section { padding: 60px 0; }
       .hero-ctas { flex-direction: column; }
       .hero-ctas .btn-primary,
       .hero-ctas .btn-secondary { justify-content: center; }
       .about-stats { grid-template-columns: 1fr; }
       .contact-links { flex-direction: column; align-items: center; }
       .contact-link { width: 100%; max-width: 320px; justify-content: center; }
+      .timeline { padding-left: 20px; }
+      .timeline-dot { left: -26px; }
+      .timeline-card { padding: 18px 20px; }
+      .edu-grid { gap: 12px; }
+      .skills-grid { gap: 12px; }
+      .featured-card { padding: 22px 18px; }
+      .section-title { margin-bottom: 32px; }
     }
   </style>
 </head>
 <body>
+
+  <!-- Scroll progress -->
+  <div id="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Back to top -->
+  <button id="back-to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
 
   <!-- ─── Navigation ──────────────────────────────────────────────── -->
   <nav id="nav" role="navigation" aria-label="Main navigation">
@@ -1000,7 +1048,7 @@
           <h1 class="hero-name" id="hero-heading">
             <span class="hero-gradient-text">Miguel Mora</span><br />Maturana
           </h1>
-          <p class="hero-subtitle">Senior Frontend Engineer · Design Systems · Micro-frontends · Next.js</p>
+          <p class="hero-subtitle" data-en="Senior Frontend Engineer · Design Systems · Micro-frontends · Next.js" data-es="Ingeniero Frontend Senior · Design Systems · Micro-frontends · Next.js">Senior Frontend Engineer · Design Systems · Micro-frontends · Next.js</p>
           <p class="hero-tagline" data-en="Building scalable products for high-traffic platforms." data-es="Construyendo productos escalables para plataformas de alto tráfico.">Building scalable products for high-traffic platforms.</p>
           <div class="hero-ctas">
             <a href="#projects" class="btn-primary" data-en="View Projects" data-es="Ver Proyectos">
@@ -1298,6 +1346,12 @@
             tucita.app
           </a>
 
+          <a href="https://github.com/m0ramax" target="_blank" rel="noopener noreferrer" class="contact-link" aria-label="Visit GitHub profile (opens in new tab)">
+            <!-- GitHub icon -->
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+            github.com/m0ramax
+          </a>
+
         </div>
       </div>
     </section>
@@ -1337,10 +1391,40 @@
       setLanguage(currentLang === 'en' ? 'es' : 'en');
     });
 
-    /* ─── Nav Scroll State ────────────────────────────────────────── */
+    /* ─── Scroll Progress Bar ─────────────────────────────────────── */
+    const scrollProgress = document.getElementById('scroll-progress');
+    const updateScrollProgress = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      scrollProgress.style.width = pct + '%';
+    };
+
+    /* ─── Back to Top ─────────────────────────────────────────────── */
+    const backToTop = document.getElementById('back-to-top');
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    /* ─── Nav Scroll State + Active Links ────────────────────────── */
     const nav = document.getElementById('nav');
+    const navAnchors = document.querySelectorAll('.nav-links a[href^="#"]');
+    const sections = Array.from(navAnchors).map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+
     const onScroll = () => {
-      nav.classList.toggle('scrolled', window.scrollY > 20);
+      const y = window.scrollY;
+      nav.classList.toggle('scrolled', y > 20);
+      backToTop.classList.toggle('visible', y > 400);
+      updateScrollProgress();
+
+      // Active nav highlight
+      let current = '';
+      sections.forEach(sec => {
+        if (y >= sec.offsetTop - 100) current = '#' + sec.id;
+      });
+      navAnchors.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === current);
+      });
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
